@@ -1,0 +1,12 @@
+import glob
+
+env = Environment()
+env.Append(CCFLAGS = ['-g', '-Wall', '-DLSB_FIRST', '-DCPU68K_USE_FAME', '-DCPUZ80_USE_CZ80'])
+env.Append(LIBS = ['m', 'z'])
+env.Append(CPPPATH = ['..', '../fame', '../cz80', '../cpu', '../sdl', '../sound'])
+
+env.ParseConfig('sdl-config --cflags')
+env.ParseConfig('sdl-config --libs')
+
+SOURCES = glob.glob('*.c') + glob.glob('../*.c') + glob.glob('../cpu/*.c') + glob.glob('../cz80/*.c') + glob.glob('../sound/*.c') + ['fame.o']
+env.Program(target = 'genplus', source = SOURCES)
