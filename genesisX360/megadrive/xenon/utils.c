@@ -13,12 +13,12 @@
  * http://www.zophar.net/fileuploads/2/10614uauyw/Genesis_ROM_Format.txt
  */
 
-int getWidth()
+int genGetWidth()
 {
 	return (reg[12] & 1) ? 320 : 256;//0x0C (width)
 }
 
-int getHeight()
+int genGetHeight()
 {
 	return (reg[1]  & 8) ? 240 : 224;//1 Height
 }
@@ -33,14 +33,14 @@ B = Brazil
 F = France
 8 = Hong Kong
 */
-unsigned char getRegion()
+unsigned char genGetRegion()
 {
 	return READ_BYTE(cart_rom, 0x0001F0);
 }
 
-int getFPS()
+int genGetFPS()
 {
-	unsigned char region=getRegion();
+	unsigned char region=genGetRegion();
 	switch(region)
 	{
 		case 'E':
@@ -66,7 +66,7 @@ int getFPS()
 	}
 }
 
-unsigned char *getGameName()
+unsigned char *genGetGameName()
 {
 	char gname[48];
 	int i=0,end=0;

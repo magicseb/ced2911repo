@@ -11,7 +11,6 @@
 #define READINT24(x)      ((x)[0]<<16 | (x)[1]<<8 | (x)[2])
 #define WRITEINT24(x, i)  {(x)[0]=i>>16; (x)[1]=(i>>8)&0xff; x[2]=i&0xff; }
 
-
 #define Uint8 unsigned char
 #define Uint16 unsigned short
 #define Uint32 unsigned int
@@ -54,6 +53,33 @@ void dofilterscale2x(int srcWidth,int srcHeight,int srcPitch,int dstPitch,void *
 		};
 
 		case 2:
+		{
+			Uint16 E0, E1, E2, E3, B, D, E, F, H;
+			for(looph = 0; looph < srcHeight; ++looph)
+			{
+				for(loopw = 0; loopw < srcWidth; ++ loopw)
+				{
+					B = *(Uint16*)(src + (MAX(0,looph-1)*srcPitch) + (2*loopw));
+					D = *(Uint16*)(src + (looph*srcPitch) + (2*MAX(0,loopw-1)));
+					E = *(Uint16*)(src + (looph*srcPitch) + (2*loopw));
+					F = *(Uint16*)(src + (looph*srcPitch) + (2*MIN(srcWidth-1,loopw+1)));
+					H = *(Uint16*)(src + (MIN(srcHeight-1,looph+1)*srcPitch) + (2*loopw));
+
+					E0 = D == B && B != F && D != H ? D : E;
+					E1 = B == F && B != D && F != H ? F : E;
+					E2 = D == H && D != B && H != F ? D : E;
+					E3 = H == F && D != H && B != F ? F : E;
+
+					*(Uint16*)(dst + looph*2*dstPitch + loopw*2*2) = E0;
+					*(Uint16*)(dst + looph*2*dstPitch + (loopw*2+1)*2) = E1;
+					*(Uint16*)(dst + (looph*2+1)*dstPitch + loopw*2*2) = E2;
+					*(Uint16*)(dst + (looph*2+1)*dstPitch + (loopw*2+1)*2) = E3;
+				}
+			}
+			break;
+		}
+
+		case 20:
 		{
 			Uint16 E0, E1, E2, E3, B, D, E, F, H;
 			for(looph = 0; looph < srcHeight; ++looph)

@@ -20,17 +20,13 @@ struct XenosSurface surface;
 void updateVideo(int starting,int finishing)//starting =1 si c la premiere function qui update l'ecran, finishing =1 si elle fini le rafraisshement de l'ecran
 {
 	f++;
-	int xres=getWidth();
-	int yres=getHeight();
+	int xres=genGetWidth();
+	int yres=genGetHeight();
 	//do_edram_foo(xe, 1);
 
-	/**
-	copy bitmap in surface (from snes9x)
-	**/
 	/* flush cache */
 	Xe_Surface_LockRect(xe, gfxplane, 0, 0, 0, 0, XE_LOCK_WRITE);
 	Xe_Surface_Unlock(xe, gfxplane);
-
 
 	/* create new surface with right size */
 	//struct XenosSurface surface = *gfxplane;
@@ -39,7 +35,7 @@ void updateVideo(int starting,int finishing)//starting =1 si c la premiere funct
 	surface_emul.height = yres;
 
 	//scale(2,surface.base, surface.pitch, gfxplane->base, (xres * gfxplane->bypp + 127) &~127, gfxplane->bypp, xres, yres);
-	dofilterscale2x(xres, yres, gfxplane->pitch, surface.pitch, gfxplane->base, surface.base, gfxplane->bypp);
+	dofilterscale2x(xres, yres, gfxplane->pitch, (surface.pitch), gfxplane->base, surface.base, gfxplane->bypp);
 
 	/* begin a new frame, i.e. reset all renderstates to the default */
 	if(starting)
@@ -49,13 +45,8 @@ void updateVideo(int starting,int finishing)//starting =1 si c la premiere funct
 	glPushMatrix();
 
 	glTranslate(0, 0, -3);//bouge de 3 en arriere
-	//glRotate(10.0, cubAnglex, cubAngley, cubAnglez);
-
-	//glRotate(f / 100.0, .5, .1, 1);
 
 	glScale(cubAnglex, cubAngley, 1);
-
-//	glScale(0.9, 0.9, 1);
 
 	M_LoadMV(xe, 0); // load model view matrix to VS constant 0
 	M_LoadMW(xe, 4); // load (fake) model world matrix to VS constant 4
@@ -64,14 +55,16 @@ void updateVideo(int starting,int finishing)//starting =1 si c la premiere funct
 	float lightDirection[] = {0, 0, -1, 0};
 	Xe_SetPixelShaderConstantF(xe, 0, lightDirection, 1);
 
-
-
 	/* draw cube */
 	Xe_SetShader(xe, SHADER_TYPE_PIXEL, sh_ps, 0);
 	Xe_SetShader(xe, SHADER_TYPE_VERTEX, sh_vs, 0);
 	Xe_SetStreamSource(xe, 0, vb, 0, 12); /* using this vertex buffer */
 	Xe_SetIndices(xe, ib); /* ... this index buffer... */
+#if 1
 	Xe_SetTexture(xe, 0, &surface_emul); /* ... and this texture */
+#else//2xsal
+	Xe_SetTexture(xe, 0, &surface); /* ... and this texture */
+#endif
 	Xe_DrawIndexedPrimitive(xe, XE_PRIMTYPE_TRIANGLELIST, 0, 0, max_vertices, 0, nr_primitives);
 
 	if(finishing)

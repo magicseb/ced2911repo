@@ -47,7 +47,7 @@ int audio_init(int rate)
     }
 
     /* Calculate the sound buffer size */
-    snd.buffer_size = (rate / getFPS());
+    snd.buffer_size = (rate / genGetFPS());
     snd.sample_rate = rate;
 
     /* Allocate sound buffers */
