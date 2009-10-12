@@ -359,7 +359,7 @@ int megadrivemain(char *romName)
 	bitmap.viewport.y = 00;
 	bitmap.remap = 1;
 
-	genFps=getFPS();
+	genFps=genGetFPS();
 
 	printf("\t\t\tsystem_init\n");
 

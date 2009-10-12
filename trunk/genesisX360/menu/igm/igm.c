@@ -13,6 +13,7 @@ In Game Menu
 #define USED_VS sh_text_vs
 
 #define ITEM_RETURN_TO_MENU 1
+#define ITEM_DISPLAY_INFO 2
 
 #define SELECT_TRUE	1
 #define SELECT_FALSE	0
@@ -41,7 +42,6 @@ void initIGM()
 	menuselected=0;
 }
 
-
 float nframe=0;
 
 #define FAST_CMP_I_SCALE i++;scale=(isel==i)?1.2f:1.0f;
@@ -54,7 +54,9 @@ void drawMenuIcon()
 	XeDrawSurface(igmMenuInfo,-0.8,-0.5,0.12*scale,1);//Exit
 	i++;scale=(isel==i)?1.3f:1.0f;
 	XeDrawSurface(igmMenuRestart,-0.2,-0.5,0.12*scale,1);//Exit
-	maxX=2;
+	i++;scale=(isel==i)?1.3f:1.0f;
+	XeDrawSurface(igmMenuInfo,0.4,-0.5,0.12*scale,1);//Exit
+	maxX=3;
 }
 
 void fixisel()
@@ -67,20 +69,15 @@ void fixisel()
 
 void igmDoAction()
 {
-
-printf("IGM->ITEM_RETURN_TO_MENU....%d -- %d  ..\n",menuselected, isel);
 	switch(menuselected)
 	{
 		case ITEM_RETURN_TO_MENU:
-			printf("IGM->ITEM_RETURN_TO_MENU....%d..\n", isel);
 			if(isel)
 			{
 				//shutdownEmulation();
 				exitRequested=1;
 				emulationPaused=0;
 				displayInfo=0;
-				printf("IGM->Shutdown emu......\n");
-
 			}
 			else
 			{
@@ -88,6 +85,14 @@ printf("IGM->ITEM_RETURN_TO_MENU....%d -- %d  ..\n",menuselected, isel);
 				resetAction();
 			}
 
+			break;
+		case ITEM_DISPLAY_INFO:
+			if(!isel)
+			{
+				resetAction();
+				emulationPaused=0;
+				displayInfo=0;
+			}
 			break;
 		case 0:
 			menuselected=isel;
@@ -156,11 +161,22 @@ void drawReturnToMenu()
 	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1);//Cancel
 	i++;scale=(isel==i)?1.3f:1.0f;
 	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1);//
-	XePrintf(-0.3,0.15,"Exit ?",1,0xFF0000);
+	XePrintf(-0.3,0.15,"Exit ?",1,0xffffff);
 	maxX=2;
 }
 
-
+void drawInformation()
+{
+	XeDrawSurface(igmPopup,-0.5,-0.5,1,1);//Popup
+	int i=0;
+	float scale=1.0f;
+	scale=(isel==i)?1.3f:1.0f;
+	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1);//Cancel
+	i++;scale=(isel==i)?1.3f:1.0f;
+	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1);//
+	XePrintf(-0.3,0.15,"Some Information about games...",1,0xffffff);
+	maxX=2;
+}
 
 void updateIGM(int debut, int fin)
 {
@@ -179,6 +195,9 @@ void updateIGM(int debut, int fin)
 
 		case ITEM_RETURN_TO_MENU:
 			drawReturnToMenu();
+			break;
+		case ITEM_DISPLAY_INFO:
+			drawInformation();
 			break;
 		default:
 			drawMenuIcon();
