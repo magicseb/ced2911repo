@@ -33,6 +33,18 @@ void updateVideo(int starting,int finishing)//starting =1 si c la premiere funct
 	struct XenosSurface surface_emul = *gfxplane;
 	surface_emul.width = xres;
 	surface_emul.height = yres;
+	/*
+	if(!finishing)
+	{
+		//Xe_SetPixelShaderConstantF(struct XenosDevice *xe, int start, const float *data, int count); // count = number of 4 floats
+		Xe_SetPixelShaderConstantF(xe,0xc4,(float*)1,1);
+	}
+	else
+	{
+		Xe_SetPixelShaderConstantF(xe,0xc4,(float*)2,1);
+		Xe_SetPixelShaderConstantF(xe,0xc4,(float*)f,1);
+	}
+	*/
 
 	//scale(2,surface.base, surface.pitch, gfxplane->base, (xres * gfxplane->bypp + 127) &~127, gfxplane->bypp, xres, yres);
 	dofilterscale2x(xres, yres, gfxplane->pitch, (surface.pitch), gfxplane->base, surface.base, gfxplane->bypp);
@@ -92,8 +104,6 @@ int initVideo()
 	cubAngley=1.96;
 
 	M_BuildPersp(&g_proj, 45.0 / 180.0 * M_PI, 640.0/480.0, 1, 200.0);
-
-
 
 	surface=*Xe_CreateTexture(xe, 512+0x80, 448, 1, 4 | 0x40, 0);//32bits
 }

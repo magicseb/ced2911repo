@@ -1,8 +1,26 @@
 #include "libxenon.h"
 #include "menu.h"
 
+#define u8 unsigned char
+#define u32 unsigned int
+#include "ps_bin.h"
+#include "vs_bin.h"
+#include "ps3d_bin.h"
+#include "vs3d_bin.h"
+
 //utiliser pendant l'update
 float xe_framecount=0.0f;
+
+//MACRO
+#define load_shader(ivbf,ips_shaders, ivs_shaders,osh_ps,osh_vs)	\
+	printf("loading shader...\n"); 							\
+	osh_ps = Xe_LoadShaderFromMemory(xe,  ips_shaders);		\
+	Xe_InstantiateShader(xe, osh_ps, 0);					\
+	printf("loading vertex shader...\n");					\
+	osh_vs = Xe_LoadShaderFromMemory(xe, ivs_shaders);		\
+	Xe_InstantiateShader(xe, osh_vs, 0);					\
+	Xe_ShaderApplyVFetchPatches(xe, osh_vs, 0, &ivbf);		\
+	printf("complete...\n");
 
 //Initilisation de l'ecran
 void initScreen(int width,int height)
@@ -66,20 +84,9 @@ void initScreen(int width,int height)
 	unsigned short cube_indices[] = { 0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23};
 
 	printf("loading pixel shader...\n");
-		/* load pixel shader */
+	/* load pixel shader */
 
-	extern unsigned char content_datapspsu[];
-	extern unsigned char content_datavsvsu[];
-
-	sh_ps = Xe_LoadShaderFromMemory(xe,  shader_3d_ps);
-	Xe_InstantiateShader(xe, sh_ps, 0);
-
-	printf("loading vertex shader...\n");
-		/* load vertex shader */
-
-	sh_vs = Xe_LoadShaderFromMemory(xe, shader_3d_vs);
-	Xe_InstantiateShader(xe, sh_vs, 0);
-	Xe_ShaderApplyVFetchPatches(xe, sh_vs, 0, &vbf);
+	load_shader(vbf, ps3d_bin, vs3d_bin, sh_ps, sh_vs);
 
 	//M_BuildPersp(&g_proj, 45.0 / 180.0 * M_PI, 640.0/480.0, 1, 200.0);
 
@@ -98,7 +105,6 @@ void initScreen(int width,int height)
 	Xe_IB_Unlock(xe, ib);
 
 
-
 	//Initialise les shaders (font)
 	static const struct XenosVBFFormat vbf_font =
 	{
@@ -109,14 +115,6 @@ void initScreen(int width,int height)
 		}
 	};
 
-	sh_font_ps = Xe_LoadShaderFromMemory(xe, shader_font_ps);
-	Xe_InstantiateShader(xe, sh_font_ps, 0);
-
-	sh_font_vs = Xe_LoadShaderFromMemory(xe, shader_font_vs);
-	Xe_InstantiateShader(xe, sh_font_vs, 0);
-	Xe_ShaderApplyVFetchPatches(xe, sh_font_vs, 0, &vbf_font);
-
-
 	/* un rectangle */
 	static const struct XenosVBFFormat texture_vbf =
 	{
@@ -125,16 +123,23 @@ void initScreen(int width,int height)
 		  {XE_USAGE_TEXCOORD, 0, XE_TYPE_FLOAT2},
 		}
 	};
+/*
+	sh_font_ps = Xe_LoadShaderFromMemory(xe, shader_font_ps);
+	Xe_InstantiateShader(xe, sh_font_ps, 0);
 
-	sh_text_ps = Xe_LoadShaderFromMemory(xe,  content_datapspsu);
+	sh_font_vs = Xe_LoadShaderFromMemory(xe, shader_font_vs);
+	Xe_InstantiateShader(xe, sh_font_vs, 0);
+	Xe_ShaderApplyVFetchPatches(xe, sh_font_vs, 0, &vbf_font);
+
+	sh_text_ps = Xe_LoadShaderFromMemory(xe,  ps_bin);
 	Xe_InstantiateShader(xe, sh_text_ps, 0);
 
-	printf("loading vertex shader...\n");
-		/* load vertex shader */
-
-	sh_text_vs = Xe_LoadShaderFromMemory(xe, content_datavsvsu);
+	sh_text_vs = Xe_LoadShaderFromMemory(xe, vs_bin);
 	Xe_InstantiateShader(xe, sh_text_vs, 0);
 	Xe_ShaderApplyVFetchPatches(xe, sh_text_vs, 0, &texture_vbf);
+*/
+	load_shader(vbf_font, shader_font_ps, shader_font_vs, sh_font_ps, sh_font_vs);
+	load_shader(texture_vbf, ps_bin, vs_bin, sh_text_ps, sh_text_vs);
 
 	/* stats */
 	printf("render..\n");

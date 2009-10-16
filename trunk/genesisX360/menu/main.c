@@ -99,12 +99,12 @@ void listFile(int refresh, char *newdirname)
 			if (directory.node[i].type == 0)
 			{
 				XeDrawSurface(XeFileIcon, -.6, (ROWHEIGHT * z) + DECALAGEROWS,
-						.06* scale , 1);
+						.06* scale , 1,0);
 			}
 			else
 			{
 				XeDrawSurface(XeFolderIcon, -.6,
-						(ROWHEIGHT * z) + DECALAGEROWS, .06* scale , 1);
+						(ROWHEIGHT * z) + DECALAGEROWS, .06* scale , 1,0);
 			}
 			z++;
 
@@ -203,7 +203,7 @@ void mainInit()
 
 	//init
 	xenos_init();
-	//console_init();
+	console_init();
 	xenon_sound_init();
 
 	kmem_init();

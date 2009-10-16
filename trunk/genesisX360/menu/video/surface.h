@@ -40,6 +40,7 @@ struct XenosSurface *XeLoadingForm;
 #include "igm_popup_png.h"
 #include "manette_png.h"
 #include "igm_menu_info_png.h"
+#include "barr_png.h"
 
 #undef u8
 #undef u32

@@ -19,10 +19,10 @@ TARGET		:=	genesisplus
 TARGETDIR   	:= 	executables
 BUILD		:=	build_xenon
 SOURCES		:= 	megadrive megadrive/cart_hw megadrive/cart_hw/svp megadrive/sound_md megadrive/unzip megadrive/xenon megadrive/m68k megadrive/cpu megadrive/ntsc\
-		 	menu menu/png  menu/include menu/font menu/video_filter/scale2x menu menu/include menu/sound menu/video menu/igm
+		 	menu menu/shaders menu/png menu/video_filter/hq2x  menu/include menu/font menu/video_filter/scale2x menu menu/include menu/sound menu/video menu/igm
 
 INCLUDES	:=	megadrive/ megadrive/cart_hw megadrive/cart_hw/svp megadrive/sound_md megadrive/unzip  megadrive/xenon megadrive/m68k   megadrive/cpu megadrive/ntsc \
-			menu menu/include menu/font	menu/video_filter/scale2x menu menu/sound build_xenon  menu/video  menu/igm
+			menu menu/include menu/video_filter/hq2x menu/font	menu/video_filter/scale2x menu menu/sound build_xenon  menu/video  menu/igm
 
 BUILD_DATE	:=	`date +%Y%m%d`
 
@@ -74,6 +74,7 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 # automatically build a list of object files for our project
 #---------------------------------------------------------------------------------
 PNGFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.png)))
+BINFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.bin)))
 TTFFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ttf)))
 OGGFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ogg)))
 PCMFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.pcm)))
@@ -92,7 +93,7 @@ else
 endif
 
 export OFILES	:=	$(PNGFILES:.png=.png.o) $(OGGFILES:.ogg=.ogg.o) \
-					$(PCMFILES:.pcm=.pcm.o)\
+					$(PCMFILES:.pcm=.pcm.o) $(BINFILES:.bin=.bin.o)\
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
 					$(sFILES:.s=.o) $(SFILES:.S=.o) \
 					$(TTFFILES:.ttf=.ttf.o)  \
@@ -171,6 +172,10 @@ $(OUTPUT).elf: $(OFILES)
 	$(bin2o)
 
 %.png.o : %.png
+	@echo $(notdir $<)
+	@$(bin2o)
+
+%.bin.o : %.bin
 	@echo $(notdir $<)
 	@$(bin2o)
 	
