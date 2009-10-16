@@ -8,8 +8,8 @@
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
 #define MIN(a,b)    (((a) < (b)) ? (a) : (b))
 
-#define READINT24(x)      ((x)[0]<<16 | (x)[1]<<8 | (x)[2])
-#define WRITEINT24(x, i)  {(x)[0]=i>>16; (x)[1]=(i>>8)&0xff; x[2]=i&0xff; }
+#define READINT24(x)      ((x)[2]<<16 | (x)[1]<<8 | (x)[0])
+#define WRITEINT24(x, i)  {(x)[2]=i>>16; (x)[1]=(i>>8)&0xff; x[0]=i&0xff; }
 
 #define Uint8 unsigned char
 #define Uint16 unsigned short
@@ -19,9 +19,9 @@ void dofilterscale2x(int srcWidth,int srcHeight,int srcPitch,int dstPitch,void *
 {
 	//
 	int looph,loopw;
-	Uint8* src = (Uint8*)XeSrc;
-	Uint8* dst = (Uint8*)XeDst;
-	bypp=2;
+	Uint16* src = (Uint16*)XeSrc;
+	Uint16* dst = (Uint16*)XeDst;
+	bypp=4;
 
 	switch(bypp)
 	{
@@ -52,6 +52,32 @@ void dofilterscale2x(int srcWidth,int srcHeight,int srcPitch,int dstPitch,void *
 			break;
 		};
 
+		case 27:
+		{
+			Uint32 E0, E1, E2, E3, B, D, E, F, H;
+			for(looph = 0; looph < srcHeight; ++looph)
+				{
+				for(loopw = 0; loopw < srcWidth; ++ loopw)
+				{
+					B = *(Uint32*)(src + (MAX(0,looph-1)*srcPitch) + (3*loopw));
+					D = *(Uint32*)(src + (looph*srcPitch) + (3*MAX(0,loopw-1)));
+					E = *(Uint32*)(src + (looph*srcPitch) + (3*loopw));
+					F = *(Uint32*)(src + (looph*srcPitch) + (3*MIN(srcWidth-1,loopw+1)));
+					H = *(Uint32*)(src + (MIN(srcHeight-1,looph+1)*srcPitch) + (3*loopw));
+
+					E0 = D == B && B != F && D != H ? D : E;
+					E1 = B == F && B != D && F != H ? F : E;
+					E2 = D == H && D != B && H != F ? D : E;
+					E3 = H == F && D != H && B != F ? F : E;
+
+					*(Uint32*)(dst + looph*2*dstPitch + loopw*2*3) = E0;
+					*(Uint32*)(dst + looph*2*dstPitch + (loopw*2+1)*3) = E1;
+					*(Uint32*)(dst + (looph*2+1)*dstPitch + loopw*2*3) = E2;
+					*(Uint32*)(dst + (looph*2+1)*dstPitch + (loopw*2+1)*3) = E3;
+				}
+			}
+			break;
+		}
 		case 2:
 		{
 			Uint16 E0, E1, E2, E3, B, D, E, F, H;

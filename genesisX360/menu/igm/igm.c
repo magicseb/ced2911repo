@@ -36,6 +36,7 @@ void initIGM()
 	igmOk=loadPNGFromMemory(igm_ok_png);
 	igmCancel=loadPNGFromMemory(igm_cancel_png);
 	igmMenuInfo=loadPNGFromMemory(igm_menu_info_png);
+	igmBarr=loadPNGFromMemory(barr_png);
 
 	maxX=0;
 	isel=0;
@@ -51,11 +52,11 @@ void drawMenuIcon()
 	int i=0;
 	float scale=1.0f;
 	scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmMenuInfo,-0.8,-0.5,0.12*scale,1);//Exit
+	XeDrawSurface(igmMenuInfo,-0.8,-0.5,0.12*scale,1,1);//Exit
 	i++;scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmMenuRestart,-0.2,-0.5,0.12*scale,1);//Exit
+	XeDrawSurface(igmMenuRestart,-0.2,-0.5,0.12*scale,1,1);//Exit
 	i++;scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmMenuInfo,0.4,-0.5,0.12*scale,1);//Exit
+	XeDrawSurface(igmMenuInfo,0.4,-0.5,0.12*scale,1,1);//Exit
 	maxX=3;
 }
 
@@ -153,27 +154,27 @@ int igmInput()
 
 void drawReturnToMenu()
 {
-	XeDrawSurface(igmPopup,-0.5,-0.5,1,1);//Popup
+	XeDrawSurface(igmPopup,-0.5,-0.5,1,1,0);//Popup
 
 	int i=0;
 	float scale=1.0f;
 	scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1);//Cancel
+	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1,0);//Cancel
 	i++;scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1);//
-	XePrintf(-0.3,0.15,"Exit ?",1,0xffffff);
+	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1,0);//
+	XePrintf(-0.3,0.15,"Exit ?",1,0x00FF00);
 	maxX=2;
 }
 
 void drawInformation()
 {
-	XeDrawSurface(igmPopup,-0.5,-0.5,1,1);//Popup
+	XeDrawSurface(igmPopup,-0.5,-0.5,1,1,0);//Popup
 	int i=0;
 	float scale=1.0f;
 	scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1);//Cancel
+	XeDrawSurface(igmCancel,-0.4,-0.3,0.12*scale,1,0);//Cancel
 	i++;scale=(isel==i)?1.3f:1.0f;
-	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1);//
+	XeDrawSurface(igmOk,0.2,-0.3,0.12*scale,1,0);//
 	XePrintf(-0.3,0.15,"Some Information about games...",1,0xffffff);
 	maxX=2;
 }
@@ -185,6 +186,8 @@ void updateIGM(int debut, int fin)
 
 	//Dessine la scene
 	XeDrawSurface2(igmBg, -1, -1, 2, 2, 1);
+	//XeDrawSurface(igmBarr,-1,-1,1,1,1);//Barr en haut
+	XeDrawSurface2(igmBarr, -1, 0.7, 2, .3, 1);
 	//event sur la manette
 	igmInput();
 	switch(menuselected)

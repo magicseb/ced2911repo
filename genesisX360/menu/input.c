@@ -5,7 +5,6 @@
 void guideCalled()
 {
 	fastPrintf(340,200,0x00FF00,"Guide ...");
-
 }
 
 //Bouton Appuyer

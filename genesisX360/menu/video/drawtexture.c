@@ -82,12 +82,13 @@ void XeDrawSurface2(struct XenosSurface *txt, float dstx, float dsty, float widt
 
 	Xe_SetShader(xe, SHADER_TYPE_PIXEL, sh_text_ps, 0);
 	Xe_SetShader(xe, SHADER_TYPE_VERTEX, sh_text_vs, 0);
+
 	Xe_SetTexture(xe, 0, txt);
 	Xe_Draw(xe, vb, 0);
 }
 
 //Garde l'aspect ratio :) en function de la texture et non du framebuffer
-void XeDrawSurface(struct XenosSurface *txt, float dstx, float dsty, float scale, int withalpha)
+void XeDrawSurface(struct XenosSurface *txt, float dstx, float dsty, float scale, int withalpha,int center)
 {
 
 	float scrratio = ((float) xe->tex_fb.width / (float) xe->tex_fb.height);
@@ -98,6 +99,8 @@ void XeDrawSurface(struct XenosSurface *txt, float dstx, float dsty, float scale
 	float width = scale;
 
 	float uleft = 0, uright = 1, vtop = 0, vbottom = 1;
+
+	dsty=dsty - ((height/2)*center);
 
 	float logo[] =
 	{ 	dstx,
@@ -123,7 +126,8 @@ void XeDrawSurface(struct XenosSurface *txt, float dstx, float dsty, float scale
 		dstx + width,
 		dsty,
 		uright,
-		vbottom };
+		vbottom
+	};
 
 	Xe_VBBegin(xe, 4);
 	Xe_VBPut(xe, logo, 6 * 4);
@@ -143,9 +147,9 @@ void XeDrawSurface(struct XenosSurface *txt, float dstx, float dsty, float scale
 		Xe_SetDestBlend(xe, XE_BLEND_ZERO);
 		Xe_SetBlendOp(xe, XE_BLENDOP_ADD);
 	}
-
 	Xe_SetShader(xe, SHADER_TYPE_PIXEL, sh_text_ps, 0);
 	Xe_SetShader(xe, SHADER_TYPE_VERTEX, sh_text_vs, 0);
+
 	Xe_SetTexture(xe, 0, txt);
 	Xe_Draw(xe, vb, 0);
 }
